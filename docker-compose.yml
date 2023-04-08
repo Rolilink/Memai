@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  memai-frontend:
+    build: ./memai-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - memai-backend
+
+  memai-backend:
+    build: ./memai-backend
+    ports:
+      - "4000:4000"
