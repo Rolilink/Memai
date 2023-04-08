@@ -1,3 +1,4 @@
+import fs from 'fs';
 import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
@@ -7,6 +8,10 @@ import swaggerJsdoc from 'swagger-jsdoc';
 
 import describeImage from './tasks/describeImage.js';
 import getMemeCaption from './tasks/getMemeCaption.js';
+import createMeme from './tasks/createMeme.js';
+import path from 'path';
+import serveStatic from 'serve-static';
+import { fileURLToPath } from 'url';
 
 const swaggerOptions = {
   definition: {
@@ -41,8 +46,26 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+// Middleware to delete the uploaded file after request processing
+const deleteFileAfterRequest = (req: Request, res: Response, next: () => unknown) => {
+  if (req.file) {
+    fs.unlink(req.file.path, (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+      }
+    });
+  }
+  next();
+};
+
 const app = express();
 app.use(bodyParser.json());
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const memesDir = path.resolve(__dirname, '../', 'memes');
+app.use('/memes', serveStatic(memesDir));
+
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
@@ -100,12 +123,15 @@ app.post('/createMeme', upload.single('image'), async (req: Request, res: Respon
   // We use getMemeCaption to generate a caption for the image using the OpenAI API
   const generatedCaption = await getMemeCaption(generatedDescription, description);
 
+  // It generates the meme with the caption and the image
+  const memePath = await createMeme(req.file.path, generatedCaption, './memes');
+
   res.status(200).json({
     message: 'Meme created successfully',
-    image: req.file.path,
+    image: memePath,
     caption: generatedCaption,
   });
-});
+}, deleteFileAfterRequest);
 
 const PORT = process.env.PORT || 4000;
 

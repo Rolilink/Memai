@@ -25,10 +25,12 @@ const getMemeCaption = async (imageDescription:string, context: string) => {
 		prompt: chatPrompt,
 	});
 
-	return await chain.call({
+	const response = await chain.call({
 		context,
 		imageDescription,
-	})
+	});
+
+	return response.text;
 };
 
 export default getMemeCaption;

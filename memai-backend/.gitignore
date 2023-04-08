@@ -129,6 +129,10 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# Ignonre all the files on upload
+# Ignore all the files on upload
 uploads/*
 !uploads/.gitkeep
+
+# Ignore all the files on upload
+memes/*
+!memes/.gitkeep
