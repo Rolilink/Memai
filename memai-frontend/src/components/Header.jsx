@@ -11,7 +11,7 @@ function Header() {
         <nav>
           <ul className="flex space-x-4">
             {options.map((title) => (
-              <li>
+              <li key={title}>
                 <a
                   href="#"
                   className="text-white hover:border-white border-b-2 border-transparent"

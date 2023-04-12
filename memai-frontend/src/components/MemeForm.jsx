@@ -1,18 +1,24 @@
 import React,{ useState } from "react";
 
-function MemeForm({onSubmit}) {
+import useCreateMeme from "../hooks/useCreateMeme";
+
+function MemeForm({onMemeCreated, onLoading}) {
     const [file, setFile] = useState(null);
     const [description, setDescription] = useState('');
     const [message, setMessage] = useState('');
 
-   
+    const {createMeme, isLoading} = useCreateMeme();
+     
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData();
         formData.append('image', file, file.name);
         formData.append('description', description);
-        onSubmit(formData);
+        const data = await createMeme(formData);
+        onMemeCreated(data);
+        
+        
     };
 
   return (

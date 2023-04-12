@@ -110,9 +110,7 @@ app.get('/api-docs-json', (req, res) => {
 
 
 app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: ['POST'], // HTTP methods allowed
-  allowedHeaders: ['Content-Type', 'Authorization'] // allowed headers
+  origin: 'http://localhost:3000/',
 }));
 
 
